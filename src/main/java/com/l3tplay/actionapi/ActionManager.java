@@ -1,5 +1,6 @@
 package com.l3tplay.actionapi;
 
+import com.l3tplay.actionapi.hooks.PlaceholderHook;
 import com.l3tplay.actionapi.hooks.VaultHook;
 import com.l3tplay.actionapi.impl.*;
 import lombok.Getter;
@@ -19,11 +20,13 @@ public class ActionManager {
     private final JavaPlugin plugin;
 
     private final Set<IAction> actions = new HashSet<>();
+    private final boolean placeholderApi;
     @Getter private final BukkitAudiences audiences;
 
     public ActionManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.audiences = BukkitAudiences.create(plugin);
+        this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
 
         registerActionBarActions();
         registerMessageActions();
@@ -35,7 +38,7 @@ public class ActionManager {
 
     public void executeAction(Player player, String action) {
         actions.stream().filter(actionObject -> action.startsWith(actionObject.getPrefix())).findAny().ifPresent(actionObject ->
-            actionObject.execute(player, StringUtils.removeStart(action, actionObject.getPrefix()).trim().replace("%player", player.getName())));
+            actionObject.execute(player, parseActionString(player, action, actionObject)));
     }
 
     public void executeActions(Player player, Collection<String> actions) {
@@ -44,6 +47,11 @@ public class ActionManager {
         }
     }
 
+    private String parseActionString(Player player, String action, IAction actionObject) {
+        String message = StringUtils.removeStart(action, actionObject.getPrefix()).trim().replace("%player", player.getName());
+
+        return placeholderApi ? PlaceholderHook.parsePlaceholders(player, message) : message;
+    }
 
     // I don't like this. I'd like to change it but I can't think of another
     // way of not creating another class for broadcasts.
