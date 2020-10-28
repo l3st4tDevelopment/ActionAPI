@@ -13,7 +13,7 @@ public abstract class MessageAction implements IAction {
 
     @Override
     public void execute(Player player, String args) {
-        getAudience(player).sendActionBar(MiniMessage.get().parse(args));
+        getAudience(player).sendMessage(MiniMessage.get().parse(args));
     }
 
     @Override
