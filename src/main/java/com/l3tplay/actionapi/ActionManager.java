@@ -3,7 +3,6 @@ package com.l3tplay.actionapi;
 import com.l3tplay.actionapi.hooks.VaultHook;
 import com.l3tplay.actionapi.impl.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.apache.commons.lang.StringUtils;
@@ -11,8 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ActionManager {
@@ -20,7 +19,7 @@ public class ActionManager {
     private final JavaPlugin plugin;
 
     private final Set<IAction> actions = new HashSet<>();
-    @Getter private BukkitAudiences audiences;
+    @Getter private final BukkitAudiences audiences;
 
     public ActionManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -39,14 +38,10 @@ public class ActionManager {
             actionObject.execute(player, StringUtils.removeStart(action, actionObject.getPrefix()).trim().replace("%player", player.getName())));
     }
 
-    public void executeActions(Player player, String[] actions) {
+    public void executeActions(Player player, Collection<String> actions) {
         for (String action : actions) {
             executeAction(player, action);
         }
-    }
-
-    public void executeActions(Player player, List<String> actions) {
-        executeActions(player, actions.toArray(new String[0]));
     }
 
 
